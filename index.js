@@ -119,10 +119,19 @@ function postTweet() {
 
   var options = {
     "method": "post",
+    // エラー応答の本文を取得し、投稿後の判定で例外に含める。
     "muteHttpExceptions": true,
     'contentType': 'application/json',
     'payload': JSON.stringify(message)
   }
 
   var response = service.fetch('https://api.twitter.com/2/tweets', options);
+  var statusCode = response.getResponseCode();
+
+  // ポスト作成に成功した場合、X API は HTTP 201 を返す。
+  if (statusCode !== 201) {
+    throw new Error(
+      'X へのポストに失敗しました (HTTP ' + statusCode + '): ' + response.getContentText()
+    );
+  }
 }
